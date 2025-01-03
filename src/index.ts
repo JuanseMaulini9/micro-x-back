@@ -2,6 +2,15 @@ import express from "express";
 import connectDB from "./db";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import { UserInterface } from "./types";
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserInterface;
+    }
+  }
+}
 
 const app = express();
 dotenv.config();

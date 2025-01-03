@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import User from "../schemas/user.schema";
 import bcrypt from "bcrypt";
+import generateToken from "../utils/generateToken";
 
 export const signup = async (req: Request, res: Response) => {
   try {
@@ -22,6 +23,7 @@ export const signup = async (req: Request, res: Response) => {
 
     if (newUser) {
       await newUser.save();
+      generateToken(newUser.username, res);
       return res.status(201).json({ username: newUser.username });
     }
   } catch (error) {
@@ -49,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
     if (!correctPassword) {
       return res.status(400).json({ message: "Las contraseñas no coinciden" });
     }
-
+    generateToken(user.username, res);
     return res.status(200).json({ username: user.username });
   } catch (error) {
     if (error instanceof Error) {
@@ -62,6 +64,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = (req: Request, res: Response) => {
   try {
+    res.cookie("jwt", "", { maxAge: 0 });
     res.status(200).json({ message: "logout" });
   } catch (error) {
     if (error instanceof Error) {
