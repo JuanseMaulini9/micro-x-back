@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017");
-    console.log("conexion exitosa con la base de datos");
+    if (process.env.PORTDB) {
+      await mongoose.connect(process.env.PORTDB);
+      console.log("conexion exitosa con la base de datos");
+    }
   } catch (e) {
     console.log("Error al conectar con la base de datos: ", e);
   }
