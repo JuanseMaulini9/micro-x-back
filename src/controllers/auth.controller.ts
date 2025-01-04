@@ -23,7 +23,7 @@ export const signup = async (req: Request, res: Response) => {
 
     if (newUser) {
       await newUser.save();
-      generateToken(newUser.username, res);
+      generateToken(newUser._id.toString(), res);
       return res.status(201).json({ username: newUser.username });
     }
   } catch (error) {
@@ -51,7 +51,7 @@ export const login = async (req: Request, res: Response) => {
     if (!correctPassword) {
       return res.status(400).json({ message: "Las contraseñas no coinciden" });
     }
-    generateToken(user.username, res);
+    generateToken(user._id.toString(), res);
     return res.status(200).json({ username: user.username });
   } catch (error) {
     if (error instanceof Error) {

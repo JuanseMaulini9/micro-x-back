@@ -1,16 +1,15 @@
-import jwt, { decode } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import User from "../schemas/user.schema";
 import { Request, Response, NextFunction } from "express";
 import { TokenPayload } from "../types";
 
-const protectRoute = async (
+export const protectRoute = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
     const token = req.cookies?.jwt;
-
     if (!token) {
       return res.status(401).json({ message: "token not provided" });
     }
@@ -24,11 +23,19 @@ const protectRoute = async (
     }
 
     const user = await User.findById(decoded.userId).select("-password");
+
     if (!user) {
       return res.status(404).send("User not found");
     }
-    req.user = user;
+    req.user = req.user || {};
+    req.user._id = user._id.toString();
+
     next();
-  } catch (error) {}
-  return res.status(500).send("Internal server error");
+  } catch (error) {
+    if (error instanceof Error) {
+      return res
+        .status(500)
+        .json({ message: `Internal error: ${error.message}` });
+    }
+  }
 };
