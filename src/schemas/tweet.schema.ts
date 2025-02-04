@@ -3,7 +3,7 @@ import { TweetInterface } from "../types";
 
 const TweetSchema = new mongoose.Schema({
   author: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
     ref: "User",
   },
